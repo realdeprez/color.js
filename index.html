@@ -1,1 +1,117 @@
-My GitHub Page
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>color.js</title>
+        <style type="text/css">
+            /* documentation styles */
+            html {background: #eee;}
+            body {font-family:Calibri,sans-serif; font-size:14px; background:#fff; border:1px solid #ccc; max-width:960px; padding: 1px 10px 25px;}
+            pre {border-left:3px solid #6CE26C; padding-left:10px;}
+            pre,code {font-family: Consolas,serif; font-size:12px; color:#333;}
+            h1 {font-size:24px; margin:1em 0;}
+            h2 {font-size:16px; margin:1em 0; border-bottom:1px solid #eee;}
+            h3 {font-size:14px; margin:1em 0;}
+            p {margin:1em 0;}
+            .highlight {background-color:lightyellow;}
+            /* example styles */
+            #swatches {list-style-type:none; overflow:hidden; padding-left:0;}
+            #swatches li {float:left; display:block; width:25px; height:25px; border:1px solid #ddd; margin-right:5px;}
+            #conversion {font-size:13px;}
+            #conversion th {border-bottom:1px solid #ccc;}
+            #conversion th, #conversion td {text-align:left; padding:0 2px;}
+            #conversion tbody td {text-align:center;}
+        </style>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="https://raw.github.com/realdeprez/color.js/master/color.min.js"></script>
+    </head>
+    <body>
+        <h1>color.js</h1>
+        <h2>conversion</h2>
+        Color (hex code or RGB string): <input type="text" value="002fa7" id="color_string">
+        <button id="convert">convert</button>
+        <table id="conversion">
+            <thead>
+                <tr>
+                    <th>Hexcode</th>
+                    <th>R (Red)</th>
+                    <th>G (Green)</th>
+                    <th>B (Blue)</th>
+                    <th>H (Hue)</th>
+                    <th>S_HSV (HSV Saturation)</th>
+                    <th>S_HSL (HSL Saturation)</th>
+                    <th>S_HSI (HSI Saturation)</th>
+                    <th>V (Value)</th>
+                    <th>L (Lightness)</th>
+                    <th>I (Intensity)</th>
+                    <th>Y_ (Luma)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <script type="text/javascript">
+            $(function() {
+                $('#convert').click(function(){
+                    var obj = Color.all(($('#color_string').val()));
+                    console && console.log(obj);
+                    $('#conversion tbody').append('<tr>' +
+                    '<td style="color:' + ((obj.L > 55) ? '#000;': '#fff;font-weight:bold;') + 'background-color:' +
+                        obj.hex + ';">' + obj.hex + '</td>' +
+                    '<td>' + obj.R + '</td>' +
+                    '<td>' + obj.G + '</td>' +
+                    '<td>' + obj.B + '</td>' +
+                    '<td>' + obj.H + '</td>' +
+                    '<td>' + obj.S_HSV + '</td>' +
+                    '<td>' + obj.S_HSL + '</td>' +
+                    '<td>' + obj.S_HSI + '</td>' +
+                    '<td>' + obj.V + '</td>' +
+                    '<td>' + obj.L + '</td>' +
+                    '<td>' + obj.I + '</td>' +
+                    '<td>' + obj.Y_ + '</td></tr>');
+                    $('#color_string').val(Color.random());
+                });
+                $('#convert').click();
+            });
+        </script>
+        <h2>sorting</h2>
+            Sort swatches by: 
+            <button id="sort_by_h">Hue</button>
+            <button id="sort_by_l">Lightness</button>
+            <button id="sort_by_i">Intensity</button>
+            <br><ul id="swatches"></ul>
+            <button id="refresh">Refresh colors</button>
+    </body>
+    <script type="text/javascript">
+        $(function () {
+            // namespace
+            window.Example = {};
+            // populate color list
+            Example.popList = function () {
+                var $swatches = $('#swatches');
+                $swatches.empty();
+                for (var i = 0; i < 25; i++) {
+                    $swatches.append('<li style="background:#' + Color.random() + ';"></li>');
+                }
+            };
+            Example.popList();
+            $('#refresh').click(function(){Example.popList();});
+            // sort method
+            Example.sort = function (key, reverse) {
+                $sorted = $('#swatches li')
+                    .each(function(){
+                        var $li = $(this);
+                        $li.attr('data-sortKey',
+                            Color.all($li.css('background-color'))[key]);
+                    })
+                    .sort(function(a, b){
+                        return $(a).attr('data-sortKey') - $(b).attr('data-sortKey');
+                    });
+                var sorted = $.makeArray($sorted);
+                $('#swatches').append(reverse ? sorted.reverse() : sorted);
+            };
+            $('#sort_by_h').click(function(){Example.sort('H');});
+            $('#sort_by_l').click(function(){Example.sort('L', 1);});
+            $('#sort_by_i').click(function(){Example.sort('I');});
+        });
+    </script>
+</html>
